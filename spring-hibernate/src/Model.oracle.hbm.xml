@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+      "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+      "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="true">
+
+	<class name="com.spring.practice.hibernate.model.User" table="ZUSER"
+		dynamic-insert="true" dynamic-update="true" optimistic-lock="none">
+
+		<id name="userId" access="field" column="USER_ID" />
+		<property name="userName" access="field" column="USER_NAME" />
+		<property name="address" access="field" column="ADDRESS" />
+		<property name="mobileNo" access="field" column="MOBILE_NO" />
+
+		<many-to-one name="group" class="com.spring.practice.hibernate.model.Group"
+			fetch="join" column="GRP_ID" not-null="false" access="field" cascade="save-update"
+			lazy="false" />
+	</class>
+	
+	<class name="com.spring.practice.hibernate.model.Group" table="ZGROUP"
+		dynamic-insert="true" dynamic-update="true" optimistic-lock="none">
+
+		<id name="groupId" access="field" column="GROUP_ID" />
+		<property name="groupName" access="field" column="GROUP_NAME" />
+		<property name="description" access="field" column="DESCRIPTION" />
+		<set name="documents" table="Z_DOCUMENT_GROUP" cascade="save-update"
+			access="field" lazy="true">
+			<key column="GRP_ID" />
+			<many-to-many class="com.spring.practice.hibernate.model.Document" column="DOC_ID"
+				unique="true" />
+		</set>
+			
+		<set name="users" access="field" lazy="true" cascade="save-update">
+    	    <key column="GRP_ID" not-null="false"/>
+        	<one-to-many class="com.spring.practice.hibernate.model.User"/>
+	    </set>
+	</class>
+	
+	<class name="com.spring.practice.hibernate.model.Document" table="ZDOCUMENT"
+		dynamic-insert="true" dynamic-update="true" optimistic-lock="none">
+
+		<id name="documentId" access="field" column="DOCUMENT_ID" />
+		<property name="title" access="field" column="TITLE" />
+		<property name="crateBy" access="field" column="CREATE_BY" />
+		<property name="createDate" access="field" column="CREATE_DATE" />
+
+		<set name="groups" table="Z_DOCUMENT_GROUP" cascade="save-update"
+			access="field" lazy="true">
+			<key column="DOC_ID" />
+			<many-to-many class="com.spring.practice.hibernate.model.Group" column="GRP_ID"
+				unique="true" />
+		</set>
+	</class>
+	
+</hibernate-mapping>

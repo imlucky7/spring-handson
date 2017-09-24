@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+    "-//Hibernate/Hibernate Configuration DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+    <!-- a SessionFactory instance listed as /jndi/name -->
+    <session-factory
+        name="java:hibernate/SessionFactory">
+		<!--<property name="_hibernate.connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
+		<property name="_hibernate.connection.url">jdbc:oracle:thin:@//_ip:_port/_dbname</property>
+		<property name="_hibernate.connection.username">_user</property>
+		<property name="_hibernate.connection.password">_password</property> -->
+		
+		<property name="dialect">org.hibernate.dialect.Oracle9Dialect</property>
+        <property name="show_sql">true</property>
+        <property name="hibernate.use_sql_comments">true</property>
+        <property name="hibernate.generate_statistics">true</property>
+        <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
+        
+        <!--<property name="hibernate.current_session_context_class">thread</property>-->
+        <!--If you set the 'current_session_context_class' and set it to 'thread' you are overriding the one that 
+        gets set by spring to tap into the CurrentSession mechanism. Spring by default sets the SpringSessionContext 
+        as the 'current_session_context_class'. If you set it to 'thread' that one will be overridden and transaction 
+        management doesn't work. It is still bound per thread but it is now spring managed.-->
+        
+        <property name="hibernate.transaction.auto_close_session">false</property>
+        
+        <property name="jta.UserTransaction">java:comp/UserTransaction</property>
+        
+        <!-- mapping files -->
+        <mapping resource="Model.oracle.hbm.xml"/>
+        <mapping resource="Queries.oracle.hbm.xml"/>
+        <!--<mapping resource="Updates.hbm.xml"/>-->
+    </session-factory>
+</hibernate-configuration>

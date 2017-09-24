@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="SoapWS" default="package.war" basedir=".">
+
+	<property name="src.dir" location="${basedir}/src" />
+	<property name="src-gen.dir" location="${basedir}/src-gen" />
+	<property name="build.classes.dir" location="${basedir}/build" />
+	<property name="dist.dir" location="${basedir}/dist" />
+	<property name="webcontent.webinf.dir" location="${basedir}/WebContent/WEB-INF" />
+	<property name="resource.dir" location="${basedir}/resources" />
+	<property name="cxf.dir" location="${basedir}/../../../../../CXF 2.5.2/lib" />
+
+	<!-- =====  cleanup everything  ===== -->
+	<target name="clean" description="Main target to clean without cleaning dependencies">
+		<echo message="Cleaning Project" level="warning" />
+		<delete dir="${dist.dir}" failonerror="false" />
+		<delete dir="${build.classes.dir}" failonerror="false" />
+		<delete dir="merged-src" failonerror="false" />
+	</target>
+
+	<target name="compile" depends="clean">
+		<echo message="Compiling SoapWS Project" />
+		<mkdir dir="${build.classes.dir}" />
+
+		<antcall target="cxfWSDLToJava"/>
+
+		<mkdir dir="merged-src" />
+		<copy todir="merged-src">
+			<fileset dir="${src-gen.dir}" />
+			<fileset dir="${src.dir}" />
+		</copy>
+
+		<javac srcdir="merged-src" destdir="${build.classes.dir}" classpathref="compile.classpath" encoding="UTF-8" debug="on">
+			<compilerarg value="-g" />
+		</javac>
+
+		<delete dir="merged-src" failonerror="false" />
+	</target>
+
+	<target name="cxfWSDLToJava">
+		<echo message="======================================" />
+		<echo message="Generating WS stubs from student.wsdl " level="info" />
+		<echo message="======================================" />
+		<java classname="org.apache.cxf.tools.wsdlto.WSDLToJava" fork="true">
+			<!-- <arg value="-impl"/> -->
+			<arg value="-server" />
+			<arg value="-d" />
+			<arg value="${src-gen.dir}" />
+			<arg value="${resource.dir}/wsdl/student.wsdl" />
+
+			<classpath>
+				<path refid="cxf.classpath" />
+			</classpath>
+		</java>
+	</target>
+
+	<path id="compile.classpath">
+		<fileset dir="${webcontent.webinf.dir}/lib" />
+	</path>
+
+	<path id="cxf.classpath">
+		<fileset dir="${cxf.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="package.war" depends="compile" description="Main target to build just the SoapWS war without resolving dependencies">
+		<echo message="Packaging war = SoapWS.war" />
+		<mkdir dir="${dist.dir}" />
+		<war destfile="${dist.dir}/SoapWS.war" webxml="${webcontent.webinf.dir}/web.xml" >
+			<fileset dir="${basedir}/WebContent" />
+			<classes dir="${build.classes.dir}" />
+			<webinf dir="${basedir}/resources" />
+		</war>
+		<delete dir="${build.classes.dir}" failonerror="false" />
+	</target>
+
+</project>

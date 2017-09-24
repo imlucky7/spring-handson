@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+ 
+    <jaxws:endpoint id="studentservice"
+        implementor="com.example.ws.student.StudentPortTypeImpl"
+        address="/student" wsdlLocation="WEB-INF/wsdl/student.wsdl">
+        
+        <jaxws:inInterceptors>
+			<ref bean="soapActionInInterceptor" />
+		</jaxws:inInterceptors>
+		
+		<jaxws:properties>
+			<entry key="ws-security.callback-handler">
+				<ref bean="serverPasswordCallback" />
+			</entry>
+		</jaxws:properties>
+		
+    </jaxws:endpoint>
+ 	
+ 	<bean id="soapActionInInterceptor" class="com.example.ws.security.SoapActionInInterceptor" >
+ 		<property name="userDB" ref="UserDB" />
+ 	</bean>
+ 	
+	<bean id="serverPasswordCallback" class="com.example.ws.security.ServerPasswordCallback" >
+		<property name="userDB" ref="UserDB" />
+ 	</bean>
+ 	
+	<bean id="UserDB" class="com.example.ws.security.UserDB" init-method="init"/>
+</beans>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://www.example.com/ws/student/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+	xmlns:tns="http://www.example.com/ws/student/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+	xmlns:ns1="http://schemas.xmlsoap.org/soap/http">
+	
+	<wsdl:types>
+		<xsd:schema targetNamespace="http://www.example.com/ws/student/">
+			<xsd:include schemaLocation="student.xsd" />
+			
+			<xsd:element name="getStudentByRollnoRequest" type="tns:getStudentByRollnoRequest" />
+			<xsd:element name="getStudentByRollnoResponse" type="tns:getStudentByRollnoResponse" />
+			<xsd:element name="getAllStudentRequest" type="tns:getAllStudentRequest" />
+			<xsd:element name="getAllStudentResponse" type="tns:getAllStudentResponse" />
+		</xsd:schema>
+	</wsdl:types>
+	
+	<wsdl:message name="getStudentByRollnoRequest">
+		<wsdl:part element="tns:getStudentByRollnoRequest" name="parameters" />
+	</wsdl:message>
+	
+	<wsdl:message name="getStudentByRollnoResponse">
+		<wsdl:part element="tns:getStudentByRollnoResponse" name="parameters" />
+	</wsdl:message>
+	
+	<wsdl:message name="getAllStudentRequest">
+		<wsdl:part element="tns:getAllStudentRequest" name="parameters" />
+	</wsdl:message>
+	
+	<wsdl:message name="getAllStudentResponse">
+		<wsdl:part element="tns:getAllStudentResponse" name="parameters" />
+	</wsdl:message>
+ 	
+ 	<wsdl:portType name="StudentPortType">
+		<wsdl:operation name="getStudentByRollno">
+			<wsdl:input message="tns:getStudentByRollnoRequest" 
+				name="getStudentByRollnoRequest">
+			</wsdl:input>
+			<wsdl:output message="tns:getStudentByRollnoResponse"
+				name="getStudentByRollnoResponse">
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getAllStudent">
+			<wsdl:input message="tns:getAllStudentRequest" 
+				name="getAllStudentRequest">
+			</wsdl:input>
+			<wsdl:output message="tns:getAllStudentResponse"
+				name="getAllStudentResponse">
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+	
+	<wsdl:binding name="StudentBinding" type="tns:StudentPortType">
+		<wsp:PolicyReference xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" URI="#UsernameTokenWithPlainTextPassword"/>
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="getStudentByRollno">
+			<soap:operation soapAction="urn:GetStudentByRollno" style="document" />
+			<wsdl:input name="getStudentByRollnoRequest">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getStudentByRollnoResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		
+		<wsdl:operation name="getAllStudent">
+			<soap:operation soapAction="urn:GetAllStudent"
+				style="document" />
+			<wsdl:input name="getAllStudentRequest">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getAllStudentResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	
+	<wsdl:service name="StudentService">
+		<wsdl:port binding="tns:StudentBinding" name="StudentPort">
+			<soap:address location="http://localhost:8080/SoapWS/services/StudentService" />
+		</wsdl:port>
+	</wsdl:service>
+	
+	<!-- UsernameToken with plain text password -->
+	<wsp:Policy wsu:Id="UsernameTokenWithPlainTextPassword"
+		xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+		xmlns:wsp="http://www.w3.org/ns/ws-policy"
+		xmlns:sp="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702">
+		<wsp:ExactlyOne>
+			<wsp:All>
+				<sp:SupportingTokens>
+					<wsp:Policy>
+						<sp:UsernameToken
+							sp:IncludeToken="http://docs.oasis-open.org/ws-sx/ws-securitypolicy/200702/IncludeToken/AlwaysToRecipient">
+							<wsp:Policy/>
+						</sp:UsernameToken>
+					</wsp:Policy>
+				</sp:SupportingTokens>
+			</wsp:All>
+		</wsp:ExactlyOne>
+	</wsp:Policy>
+</wsdl:definitions>

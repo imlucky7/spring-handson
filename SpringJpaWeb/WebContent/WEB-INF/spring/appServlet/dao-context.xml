@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation=" http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+	default-init-method="init" default-destroy-method="close">
+
+	<!--<bean id="abstractSpringDaoService" class="com.spring.practice.jpa.dao.AbstractDaoService" scope="singleton" abstract="true">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>-->
+	
+	<!--<bean id="userDaoService" class="com.spring.practice.jpa.dao.UserDaoService" scope="singleton" parent="abstractSpringDaoService" />
+	<bean id="groupDaoService" class="com.spring.practice.jpa.dao.GroupDaoService" scope="singleton" parent="abstractSpringDaoService" />
+	<bean id="documentDaoService" class="com.spring.practice.jpa.dao.DocumentDaoService" scope="singleton" parent="abstractSpringDaoService">
+		<property name="txManager" ref="txManager" />
+	</bean>-->
+</beans>

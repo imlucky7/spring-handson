@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+      "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+          "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<query name="com.spring.practice.hibernateannotation.model.Document.updateTitle">
+	<![CDATA[
+	update com.spring.practice.hibernateannotation.model.Document set title=? where documentId=?
+   	]]>
+	</query>
+	
+	<query name="com.spring.practice.hibernateannotation.model.User.updateMobileNo">
+	<![CDATA[
+	update com.spring.practice.hibernateannotation.model.User set mobileNo=? where userId=?
+   	]]>
+	</query>
+	
+	<query name="com.spring.practice.hibernateannotation.model.User.updateAddress">
+	<![CDATA[
+	update com.spring.practice.hibernateannotation.model.User set address=? where userId=?
+   	]]>
+	</query>
+	
+	<query name="com.spring.practice.hibernateannotation.model.User.getUserByDocTitle">
+	<![CDATA[
+	select user from com.spring.practice.hibernateannotation.model.User as user 
+		inner join fetch user.group grp 
+		left outer join grp.documents doc 
+		where doc.title = :docTitle
+   	]]>
+	</query>
+	
+	<query name="com.spring.practice.hibernateannotation.model.Document.updateCreateBy">
+	<![CDATA[
+	update com.spring.practice.hibernateannotation.model.Document set crateBy=? where documentId=?
+   	]]>
+	</query>
+</hibernate-mapping>

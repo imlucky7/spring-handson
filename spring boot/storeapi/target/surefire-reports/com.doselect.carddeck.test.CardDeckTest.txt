@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.doselect.carddeck.test.CardDeckTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.108 sec - in com.doselect.carddeck.test.CardDeckTest

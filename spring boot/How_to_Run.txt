@@ -1,0 +1,20 @@
+Steps to run the project -
+
+1. Install java 1.7.0_51, apache-maven-3.3.9 in the machine
+2. Go to storeapi folder and run maven command -
+   mvn clean install
+3. storeapi-1.0.jar will be generated inside /storeapi/target folder
+4. Copy two files storeapi-1.0.jar, shuffle.properties and keep any location(say, /dist folder)
+   note : storeapi-1.0.jar and shuffle.properties files must be kept in same location
+5. go to dist folder and run below comman -
+   java -jar storeapi-1.0.jar --server.port=<port_number> --spring.config.location=classpath:file:./shuffle.properties
+   
+Configure the shuffle property in shuffle.properties file before start the application.
+
+Rest URLs
+Create Deck -  (POST) http://localhost:9090/storeapi/rest/createCardDeck/test2
+Get all card deck - (GET) http://localhost:9090/storeapi/rest/allCardDecks
+Get deck by name - (GET) http://localhost:9090/storeapi/rest/allCardDeckByName/test2
+Delete Deck - (Delete) http://localhost:9090/storeapi/rest/deleteCardDeck/test
+Shuffle Deck - (PUT) http://localhost:9090/storeapi/rest/shuffle/test2
+

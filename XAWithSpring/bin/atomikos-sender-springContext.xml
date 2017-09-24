@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop" 
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation=" http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd ">
+
+<!--  Begin Messaging related beans -->
+	<!-- The JNDI Template to be used across all messaging related beans -->
+	<bean id="jndiTemplate" class="org.springframework.jndi.JndiTemplate">
+		<property name="environment">
+			<props>
+				<prop key="java.naming.factory.initial">
+					com.tibco.tibjms.naming.TibjmsInitialContextFactory
+				</prop>
+				<prop key="java.naming.provider.url">
+					tcp://localhost:7222
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- End JNDI Template -->
+
+	<!-- Begin definition of jms destination -->
+	<bean id="appJmsDestination"
+		class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiTemplate">
+			<ref bean="jndiTemplate"/>
+		</property>
+		<property name="jndiName" value="test.q1"/>
+	</bean>
+	<!-- End definition  -->
+
+	<!-- Begin definition of sender JMS templates -->
+	<bean id="appSenderTemplate" 
+		  class="org.springframework.jms.core.JmsTemplate">
+	    <property name="connectionFactory">
+	      <ref bean="queueConnectionFactoryBean"/>
+	    </property>
+		<property name="defaultDestination">
+			<ref bean="appJmsDestination"/>
+		</property>
+        <property name="messageTimestampEnabled" value="false"/>
+        <property name="messageIdEnabled" value="false"/>
+        <property name="sessionTransacted" value="true"/>
+	</bean>
+
+	<bean id="xaFactory"
+	  	class="com.tibco.tibjms.TibjmsXAQueueConnectionFactory">
+	  	<property name="serverUrl">
+	  		<value>tcp://localhost:7222</value>
+	  	</property>
+	</bean>
+
+	<bean id="queueConnectionFactoryBean"
+	  	class="com.atomikos.jms.QueueConnectionFactoryBean"
+	  	init-method="init">
+	
+	  	<property name="resourceName">
+	  		<value>Execution_Q</value>
+	  	</property>
+	  	<property name="xaQueueConnectionFactory">
+	  		<ref bean="xaFactory" />
+	  	</property>
+	</bean>
+
+    <bean id="orderHandler" class="com.findonnet.messaging.MessageHandler"/>
+
+    <bean id="orderListener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property name="delegate" ref="orderHandler"/>
+        <property name="defaultListenerMethod" value="handleOrder"/>
+    </bean>
+
+
+ <!-- End Messaging related beans -->
+
+
+	<!--  Begin definition of the datasource -->
+
+	<bean id="dataSource"
+		class="com.atomikos.jdbc.SimpleDataSourceBean" init-method="init"
+		destroy-method="close">
+		<property name="uniqueResourceName">
+			<value>Mysql</value>
+		</property>
+		<property name="xaDataSourceClassName">
+			<value>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</value>
+		</property>
+		<property name="xaDataSourceProperties">
+			<value>URL=jdbc:mysql://127.0.0.1:3306/mydb1?autoReconnect=true&amp;user=root&amp;password=murali</value>
+		</property>
+		<property name="exclusiveConnectionMode">
+			<value>true</value>
+		</property>
+	</bean>
+ 
+	<!--  End definition -->
+    
+	<!-- ===================================================== -->
+	<!-- ==== TRANSACTION MANAGER CONFIG ===================== -->
+	<!-- ===================================================== -->
+
+
+	<bean id="atomikosTransactionManager"
+		class="com.atomikos.icatch.jta.UserTransactionManager" init-method="init" destroy-method="close">
+		<property name="forceShutdown">
+			<value>true</value>
+		</property>
+	</bean>
+
+	<bean id="atomikosUserTransaction"
+		class="com.atomikos.icatch.jta.UserTransactionImp"/>
+
+	<bean id="transactionManager"
+		class="org.springframework.transaction.jta.JtaTransactionManager">
+		<property name="transactionManager">
+			<ref bean="atomikosTransactionManager" />
+		</property>
+		<property name="userTransaction">
+			<ref bean="atomikosUserTransaction" />
+		</property>
+	</bean>
+    
+	<!--  Begin sequenceDAO bean. Handles persistence of seq num in the DB -->
+    <bean id="sequenceDAO"
+		  class="com.findonnet.persistence.MessageSequenceDAO">
+		<property name="dataSource">
+			<ref bean="dataSource"/>
+		</property>
+	</bean>
+	<!--  End sequenceDAO bean -->
+
+
+    <bean id="eventHandlerTarget"
+		  class="com.findonnet.messaging.EventHandler">
+	</bean>
+
+
+    <bean id="eventHandler" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+    	<property name="transactionManager"><ref bean="transactionManager" /></property>
+    	<property name="target"><ref bean="eventHandlerTarget"  /></property>
+    	<property name="transactionAttributes">
+		<props>
+			<prop key="handle*">PROPAGATION_REQUIRED,-Exception</prop>
+		</props>
+    	</property>
+    </bean>
+
+<!-- 
+    <bean id="LoggerAspect"  class = "com.findonnet.service.aop.LoggerAspect"/>
+
+    <aop:config>
+        <aop:aspect ref="LoggerAspect">
+         <aop:pointcut id="myCutLogging2"
+                    expression="execution(* com.atomikos..*.*(..))"/>
+         <aop:around pointcut-ref="myCutLogging2" method="log"/>
+        </aop:aspect>
+    </aop:config>
+ -->
+
+</beans>

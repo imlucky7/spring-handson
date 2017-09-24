@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="demo" name="XAWithSpring">
+    <property environment="env"/>
+    <property file="build.properties"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.5"/>
+    <property name="source" value="1.5"/>
+    <path id="XAWithSpring.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="lib/atomikos-util.jar"/>
+        <pathelement location="lib/cglib-nodep-2.1_3.jar"/>
+        <pathelement location="lib/commons-logging.jar"/>
+        <pathelement location="lib/jbossjta-integration.jar"/>
+        <pathelement location="lib/jbossjta.jar"/>
+        <pathelement location="lib/jbossts-common.jar"/>
+        <pathelement location="lib/jca.jar"/>
+        <pathelement location="lib/jms.jar"/>
+        <pathelement location="lib/jta.jar"/>
+        <pathelement location="lib/log4j-1.2.12.jar"/>
+        <pathelement location="lib/mysql-connector-java-5.0.5-bin.jar"/>
+        <pathelement location="lib/spring.jar"/>
+        <pathelement location="lib/tibjms.jar"/>
+        <pathelement location="lib/transactions-api.jar"/>
+        <pathelement location="lib/transactions-jta.jar"/>
+        <pathelement location="lib/transactions.jar"/>
+        <pathelement location="lib/btm-1.0-beta4.jar"/>
+        <pathelement location="lib/slf4j-jdk14.jar"/>
+        <pathelement location="lib/aspectjrt.jar"/>
+        <pathelement location="lib/aspectjweaver.jar"/>
+        <pathelement location="lib/activemq-core-4.1.1.jar"/>
+        <pathelement location="lib/backport-util-concurrent-2.1.jar"/>
+        <pathelement location="lib/geronimo-j2ee-management_1.0_spec-1.0.jar"/>
+    </path>
+
+	<target name="demo">
+		<echo> ***************************************************************************************************** </echo>
+		<echo> ****                              The following ant tasks are available:                         **** </echo>
+		<echo> ***************************************************************************************************** </echo>
+		<echo> The following ant tasks are available:</echo>
+		<echo> 1.  clean                 - cleans up the environment</echo>
+		<echo> 2.  init                  - creates the required directories and files</echo>
+		<echo> 3.  build                 - compiles the source</echo>
+		<echo> 4.  JbossSender           - runs the JbossTS usecase1 for updating two databases using XA</echo>
+		<echo> 5.  AtomikosSender-AMQ    - runs the Atomikos sender usecase2 with ActiveMQ- updates database and sends msg</echo>
+		<echo> 6.  AtomikosConsumer-AMQ  - runs the Atomikos consumer usecase3 with ActiveMQ- consumes msg and updates database</echo>
+		<echo> 7.  AtomikosSender-TIB    - runs the Atomikos sender usecase2 with TIBCO EMS- updates database and sends a jms msg</echo>
+		<echo> 8.  AtomikosConsumer-TIB  - runs the Atomikos consumer usecase3 with TIBCO EMS- consumes msg and updates database</echo>
+		<echo> 9.  BitronixSender-AMQ    - runs the Bitronix sender usecase2 with ActiveMQ- updates database and sends a jms msg</echo>
+		<echo> 10. BitronixConsumer-AMQ  - runs the Bitronix consumer usecase3 with ActiveMQ- consumes msg and updates database</echo>
+		<echo> 11. BitronixSender-TIB    - runs the Bitronix sender usecase2 with TIBCO EMS- updates database and sends a jms msg</echo>
+		<echo> 12. BitronixConsumer-TIB  - runs the Bitronix consumer usecase3 with TIBCO EMS- consumes msg and updates database</echo>
+		<echo> 13. ajcompile             - compile aspectj code</echo>
+		<echo> 14. weaveAtomikos         - weave Atomikos JTA jar library</echo>
+		<echo> 15. weaveJboss            - weave Jboss JTA jar library</echo>
+		<echo> 16. weaveBitronix         - weave Bitronix JTA jar library</echo>
+		<echo> 17. weaveAll              - weave all the JTA libraries</echo>
+		<echo> ***************************************************************************************************** </echo>
+		<echo> ****          For tasks 4-12 please use the -Dtest_mode=success or -Dtest_mode=fail              **** </echo>
+		<echo> ***************************************************************************************************** </echo>
+	</target>
+
+
+	<target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src" excludes="**/*.uad, **/*.ucd, **/*.uld, **/*.upd, **/*.udd, **/*.uod, **/*.usd, **/*.utd, **/*.uud, **/*.odd, **/*.ead, **/*.ecd, **/*.eld, **/*.epd, **/*.edd, **/*.eod, **/*.esd, **/*.etd, **/*.eud, **/*.urd*.uml, **/*.ecore, **/*.java"/>
+        </copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="configs" excludes="**/*.uad, **/*.ucd, **/*.uld, **/*.upd, **/*.udd, **/*.uod, **/*.usd, **/*.utd, **/*.uud, **/*.odd, **/*.ead, **/*.ecd, **/*.eld, **/*.epd, **/*.edd, **/*.eod, **/*.esd, **/*.etd, **/*.eud, **/*.urd*.uml, **/*.ecore, **/*.java"/>
+        </copy>
+    </target>
+
+	<target name="clean">
+        <delete dir="bin"/>
+    </target>
+
+	<target depends="clean" name="cleanall"/>
+
+    <target depends="build-subprojects,build-project" name="build"/>
+
+    <target name="build-subprojects"/>
+
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="XAWithSpring.classpath"/>
+        </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+            <src path="configs"/>
+            <classpath refid="XAWithSpring.classpath"/>
+        </javac>
+    </target>
+
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+
+    <target name="JbossSender">
+        <echo message="testing for: ${test_mode}"/>
+        <java classname="com.findonnet.messaging.MainApp" failonerror="true" fork="yes">
+            <arg line="jboss-springContext.xml ${test_mode}"/>
+            <classpath refid="XAWithSpring.classpath"/>
+        </java>
+    </target>
+
+    <target name="AtomikosSender-AMQ">
+        <echo message="testing for: ${test_mode}"/>
+        <java classname="com.findonnet.messaging.MainApp" failonerror="true" fork="yes">
+            <jvmarg line="-Dcom.atomikos.icatch.file=configs/atomikos.properties"/>
+            <arg line="amq-atomikos-sender-springContext.xml success"/>
+            <classpath refid="XAWithSpring.classpath"/>
+        </java>
+    </target>
+
+    <target name="AtomikosConsumer-AMQ">
+        <echo message="testing for: ${test_mode}"/>
+        <java classname="com.findonnet.messaging.MainApp" failonerror="true" fork="yes">
+            <jvmarg line="-Dcom.atomikos.icatch.file=configs/atomikos.properties"/>
+            <arg line="amq-atomikos-consumer-springContext.xml success"/>
+            <classpath refid="XAWithSpring.classpath"/>
+        </java>
+    </target>
+
+    <target name="AtomikosSender-TIB">
+        <echo message="testing for: ${test_mode}"/>
+        <java classname="com.findonnet.messaging.MainApp" failonerror="true" fork="yes">
+            <jvmarg line="-Dcom.atomikos.icatch.file=configs/atomikos.properties"/>
+            <arg line="atomikos-sender-springContext.xml ${test_mode}"/>
+            <classpath refid="XAWithSpring.classpath"/>
+        </java>
+    </target>
+
+	<target name="AtomikosConsumer-TIB">
+        <echo message="testing for: ${test_mode}"/>
+        <java classname="com.findonnet.messaging.MainApp" failonerror="true" fork="yes">
+            <jvmarg line="-Dcom.atomikos.icatch.file=configs/atomikos.properties"/>
+            <arg line="atomikos-consumer-springContext.xml ${test_mode}"/>
+            <classpath refid="XAWithSpring.classpath"/>
+        </java>
+    </target>
+
+    <target name="BitronixSender-AMQ">
+        <echo message="testing for: ${test_mode}"/>
+        <java classname="com.findonnet.messaging.MainApp" failonerror="true" fork="yes">
+            <jvmarg line="-Dbitronix.tm.configuration=configs/bitronix-default-config.properties"/>
+            <arg line="amq-bitronix-sender-springContext.xml success"/>
+            <classpath refid="XAWithSpring.classpath"/>
+        </java>
+    </target>
+
+    <target name="BitronixConsumer-AMQ">
+        <echo message="testing for: ${test_mode}"/>
+        <java classname="com.findonnet.messaging.MainApp" failonerror="true" fork="yes">
+            <jvmarg line="-Dbitronix.tm.configuration=configs/bitronix-default-config.properties"/>
+            <arg line="amq-bitronix-consumer-springContext.xml success"/>
+            <classpath refid="XAWithSpring.classpath"/>
+        </java>
+    </target>
+
+    <target name="BitronixSender-TIB">
+        <echo message="testing for: ${test_mode}"/>
+        <java classname="com.findonnet.messaging.MainApp" failonerror="true" fork="yes">
+            <jvmarg line="-Dbitronix.tm.configuration=configs/bitronix-default-config.properties"/>
+            <arg line="bitronix-sender-springContext.xml ${test_mode}"/>
+            <classpath refid="XAWithSpring.classpath"/>
+        </java>
+    </target>
+
+    <target name="BitronixConsumer-TIB">
+        <echo message="testing for: ${test_mode}"/>
+        <java classname="com.findonnet.messaging.MainApp" failonerror="true" fork="yes">
+            <jvmarg line="-Dbitronix.tm.configuration=configs/bitronix-default-config.properties"/>
+            <arg line="bitronix-consumer-springContext.xml ${test_mode}"/>
+            <classpath refid="XAWithSpring.classpath"/>
+        </java>
+    </target>
+
+    <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties"/>
+
+    <target name="ajcompile">
+	    <mkdir dir="dest"/>
+		<iajc destdir="dest">
+		  <sourceroots>
+		      <pathelement location="tracing"/>
+		  </sourceroots>
+		  <classpath refid="XAWithSpring.classpath"/>
+		</iajc>
+    </target>
+
+    <target name="weaveAtomikos">
+	    <mkdir dir="dest"/>
+		<iajc outjar="lib/transactions-jta.jar">
+		  <injars>
+		      <pathelement location="original-libs/transactions-jta.jar"/>
+		  </injars>
+		  <sourceroots>
+		      <pathelement location="tracing"/>
+		  </sourceroots>
+		  <classpath refid="XAWithSpring.classpath"/>
+		</iajc>
+    </target>
+
+    <target name="weaveJboss">
+	    <mkdir dir="dest"/>
+		<iajc outjar="lib/jbossjta.jar">
+		  <injars>
+		      <pathelement location="original-libs/jbossjta.jar"/>
+		  </injars>
+		  <sourceroots>
+		      <pathelement location="tracing"/>
+		  </sourceroots>
+		  <classpath refid="XAWithSpring.classpath"/>
+		</iajc>
+    </target>
+
+    <target name="weaveBitronix">
+	    <mkdir dir="dest"/>
+		<iajc outjar="lib/btm-1.0-beta4.jar">
+		  <injars>
+		      <pathelement location="original-libs/btm-1.0-beta4.jar"/>
+		  </injars>
+		  <sourceroots>
+		      <pathelement location="tracing"/>
+		  </sourceroots>
+		  <classpath refid="XAWithSpring.classpath"/>
+		</iajc>
+    </target>
+
+
+    <target name="weaveAll" depends="weaveJboss,weaveAtomikos,weaveBitronix"/>
+
+
+</project>

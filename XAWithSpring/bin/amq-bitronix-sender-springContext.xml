@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+
+<!--  Begin Messaging related beans -->
+	<!-- The JNDI Template to be used across all messaging related beans -->
+	<bean id="jndiTemplate" class="org.springframework.jndi.JndiTemplate">
+		<property name="environment">
+			<props>
+				<prop key="java.naming.factory.initial">
+					org.apache.activemq.jndi.ActiveMQInitialContextFactory
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- End JNDI Template -->
+
+	<!-- Begin definition of jms destination -->
+	<bean id="appJmsDestination"
+		class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiTemplate">
+			<ref bean="jndiTemplate"/>
+		</property>
+		<property name="jndiName" value="test.q1"/>
+	</bean>
+	<!-- End definition  -->
+
+	<!-- Begin definition of sender JMS template -->
+	<bean id="appSenderTemplate" 
+		  class="org.springframework.jms.core.JmsTemplate">
+	    <property name="connectionFactory">
+	      <ref bean="ConnectionFactory"/>
+	    </property>
+		<property name="defaultDestination">
+			<ref bean="appJmsDestination"/>
+		</property>
+        <property name="messageTimestampEnabled" value="false"/>
+        <property name="messageIdEnabled" value="false"/>
+        <property name="sessionTransacted" value="false"/>
+	</bean>
+
+    <!--   Begin BITRONIX specific configuration-->
+
+	<bean id="ConnectionFactoryBean" class="bitronix.tm.resource.jms.ConnectionFactoryBean">
+		<property name="className" value="org.apache.activemq.ActiveMQXAConnectionFactory" />
+		<property name="uniqueName" value="amq" />
+		<property name="poolSize" value="2" />
+		<property name="driverProperties">
+			<props>
+				<prop key="brokerURL">tcp://localhost:61616</prop>
+			</props>
+		</property>
+	</bean>
+
+    <!-- create datasources out of beans, see http://www.bitronix.be/Btm/Installation#standalone -->
+	<bean id="ConnectionFactory" factory-bean="ConnectionFactoryBean" factory-method="createResource" />
+
+
+    
+	<!-- ===================================================== -->
+	<!-- ==== TRANSACTION MANAGER CONFIG ===================== -->
+	<!-- ===================================================== -->
+
+	<bean id="BitronixTransactionManager" factory-method="getTransactionManager"
+	    class="bitronix.tm.TransactionManagerServices" depends-on="btmConfig,ConnectionFactory" destroy-method="shutdown" />
+	<bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+		<property name="transactionManager" ref="BitronixTransactionManager" />
+		<property name="userTransaction" ref="BitronixTransactionManager" />
+	</bean>
+
+	<!--  Bitronix Transaction Manager embedded configuration -->
+	<bean id="btmConfig" factory-method="getConfiguration" class="bitronix.tm.TransactionManagerServices">
+	    <property name="serverId" value="spring-btm-sender" />
+	</bean>
+
+	<bean id="dataSourceBean1" class="bitronix.tm.resource.jdbc.DataSourceBean">
+		<property name="className" value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource" />
+		<property name="uniqueName" value="mysql" />
+		<property name="poolSize" value="2" />
+		<property name="driverProperties">
+			<props>
+				<prop key="user">root</prop>
+				<prop key="password">murali</prop>
+				<prop key="databaseName">mydb1</prop>
+			</props>
+		</property>
+	</bean>
+
+
+	<bean id="Db1DataSource" factory-bean="dataSourceBean1" factory-method="createResource" />
+
+
+<!--   End BITRONIX -->
+
+    
+	<!--  Begin sequenceDAO bean. -->
+    <bean id="sequenceDAO"
+		  class="com.findonnet.persistence.MessageSequenceDAO">
+		<property name="dataSource">
+			<ref bean="Db1DataSource"/>
+		</property>
+	</bean>
+	<!--  End sequenceDAO bean -->
+
+
+
+    <bean id="eventHandlerTarget"
+		  class="com.findonnet.messaging.EventHandler">
+	</bean>
+
+
+    <bean id="eventHandler" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	  <property name="transactionManager"><ref bean="transactionManager" /></property>
+	  <property name="target"><ref bean="eventHandlerTarget"/></property>
+	  <property name="transactionAttributes">
+		<props>
+			<prop key="handle*">PROPAGATION_REQUIRED,-Exception</prop>
+		</props>
+	  </property>
+    </bean>
+
+
+</beans>

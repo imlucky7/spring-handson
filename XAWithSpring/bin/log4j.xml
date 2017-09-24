@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender name="DefaultAppender" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="MainApp.log"/>
+		<param name="MaxFileSize" value="1000KB"/>
+		<param name="MaxBackupIndex" value="10"/>
+		<param name="Append" value="true"/>
+		<param name="Threshold" value="debug"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-3p-[%d{ISO8601}][%t][%m][-%c{1}][%l]%n"/>
+		</layout>
+	</appender>
+
+	<appender name="ConsoleAppender" class="org.apache.log4j.ConsoleAppender">
+		<param name="Threshold" value="debug"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-3p-[%d{ISO8601}][%t][%m][-%c{1}][%l]%n"/>
+		</layout>
+	</appender>
+
+	<!-- Log only Warning messages for the commons packages -->
+	<logger name="com.findonnet" additivity="false">
+		<level value="debug"/>
+		<appender-ref ref="DefaultAppender"/>
+		<appender-ref ref="ConsoleAppender"/>
+	</logger>
+	<logger name="org.apache.commons" additivity="false">
+		<level value="info"/>
+		<appender-ref ref="ConsoleAppender"/>
+	</logger>
+	<logger name="org.springframework" additivity="false">
+		<level value="debug"/>
+		<appender-ref ref="DefaultAppender"/>
+	</logger>
+	<logger name="com.arjuna" additivity="false">
+		<level value="debug"/>
+		<appender-ref ref="DefaultAppender"/>
+	</logger>
+	<logger name="com.atomikos" additivity="false">
+		<level value="debug"/>
+		<appender-ref ref="DefaultAppender"/>
+	</logger>
+	<logger name="bitronix" additivity="false">
+		<level value="debug"/>
+		<appender-ref ref="DefaultAppender"/>
+	</logger>
+	<root>
+		<priority value="debug"/>
+		<appender-ref ref="DefaultAppender"/>
+		<appender-ref ref="ConsoleAppender"/>
+		<!--appender-ref ref="ErrorAppender"/-->
+	</root>
+</log4j:configuration>

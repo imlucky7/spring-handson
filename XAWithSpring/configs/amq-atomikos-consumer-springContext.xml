@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop" 
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation=" http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd ">
+
+<!--  Begin Messaging related beans -->
+	<!-- The JNDI Template to be used across all messaging related beans -->
+	<bean id="jndiTemplate" class="org.springframework.jndi.JndiTemplate">
+		<property name="environment">
+			<props>
+				<prop key="java.naming.factory.initial">
+					org.apache.activemq.jndi.ActiveMQInitialContextFactory
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- End JNDI Template -->
+
+	<!-- Begin definition of jms destination -->
+	<bean id="appJmsDestination"
+		class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiTemplate">
+			<ref bean="jndiTemplate"/>
+		</property>
+		<property name="jndiName" value="test.q1"/>
+	</bean>
+	<!-- End definition  -->
+
+
+    <bean id="xaFactory"
+    	class="org.apache.activemq.ActiveMQXAConnectionFactory">
+        <constructor-arg>
+           <value>tcp://localhost:61616</value>
+        </constructor-arg>
+    </bean>
+
+
+    <bean id="queueConnectionFactoryBean"
+    	class="com.atomikos.jms.QueueConnectionFactoryBean"
+    	init-method="init">
+  	  <property name="resourceName">
+  		<value>Execution_Q</value>
+  	  </property>
+  	  <property name="xaQueueConnectionFactory">
+  		<ref bean="xaFactory" />
+  	  </property>
+    </bean>
+
+
+    <bean id="msgHandler" class="com.findonnet.messaging.MessageHandler"/>
+
+    <bean id="msgListener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property name="delegate" ref="msgHandler"/>
+        <property name="defaultListenerMethod" value="handleOrder"/>
+    </bean>
+
+    <!-- End Messaging related beans -->
+
+
+	<bean id="dataSource"
+		class="com.atomikos.jdbc.SimpleDataSourceBean" init-method="init"
+		destroy-method="close">
+		<property name="uniqueResourceName">
+			<value>Mysql</value>
+		</property>
+		<property name="xaDataSourceClassName">
+			<value>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</value>
+		</property>
+		<property name="xaDataSourceProperties">
+			<value>URL=jdbc:mysql://127.0.0.1:3306/mydb2?autoReconnect=true&amp;user=root&amp;password=murali</value>
+		</property>
+		<property name="exclusiveConnectionMode">
+			<value>true</value>
+		</property>
+	</bean>
+
+    
+	<!-- ===================================================== -->
+	<!-- ==== TRANSACTION MANAGER CONFIG ===================== -->
+	<!-- ===================================================== -->
+
+
+	<bean id="atomikosTransactionManager"
+		class="com.atomikos.icatch.jta.UserTransactionManager" init-method="init" destroy-method="close">
+		<property name="forceShutdown">
+			<value>true</value>
+		</property>
+	</bean>
+
+	<bean id="atomikosUserTransaction"
+		class="com.atomikos.icatch.jta.UserTransactionImp"/>
+
+	<bean id="transactionManager"
+		class="org.springframework.transaction.jta.JtaTransactionManager">
+		<property name="transactionManager">
+			<ref bean="atomikosTransactionManager" />
+		</property>
+		<property name="userTransaction">
+			<ref bean="atomikosUserTransaction" />
+		</property>
+	</bean>
+    
+	<!--  Begin sequenceDAO bean. Handles persistence of seq num in the DB -->
+    <bean id="sequenceDAO"
+		  class="com.findonnet.persistence.MessageSequenceDAO">
+		<property name="dataSource">
+			<ref bean="dataSource"/>
+		</property>
+	</bean>
+	<!--  End sequenceDAO bean -->
+
+ 
+    <!-- ========================================= -->
+	<!-- ==== JMS CONFIG FOR SPRING=============== -->
+	<!-- ========================================= -->
+
+	<bean id="listenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer" destroy-method="close">
+		<property name="concurrentConsumers" value="1"/>
+		<property name="connectionFactory" ref="queueConnectionFactoryBean" />
+		<property name="destination" ref="appJmsDestination"/>
+		<property name="messageListener" ref="msgListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="sessionTransacted" value="true"/>
+		<property name="receiveTimeout" value="5000"/>
+    	<property name="recoveryInterval" value="6000"/>
+    	<property name="autoStartup" value="false"/>
+	</bean>
+
+	
+	
+</beans>

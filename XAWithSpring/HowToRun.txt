@@ -1,0 +1,11 @@
+1. Create the database using mysql.sql file
+2. build the code using build.xml file
+3. Run the usecase1: updating two table in two databases - 
+	a. change the database credential in jboss-springContext.xml
+	b. Change the argument (success/fail) in build.properties
+		If argument is set to success, then two tables will be updated successfully
+		If argument is set to false, then exception will be occurred and transaction will be rollback 
+	c. To run - ant JbossSender
+	
+
+Codebase explanation - http://www.javaworld.com/article/2077714/java-web-development/xa-transactions-using-spring.html

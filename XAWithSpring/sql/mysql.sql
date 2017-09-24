@@ -1,0 +1,96 @@
+-- MySQL dump 10.10
+--
+-- Host: localhost    Database: mydb1
+-- ------------------------------------------------------
+-- Server version	5.0.16-nt
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Current Database: `mydb1`
+--
+
+--CREATE DATABASE /*!32312 IF NOT EXISTS*/ `mydb1` /*!40100 DEFAULT CHARACTER SET utf8 */;
+DROP DATABASE IF EXISTS mydb1;
+CREATE DATABASE mydb1;
+GRANT ALL PRIVILEGES ON mydb1.* TO 'iot'@'%' IDENTIFIED BY  'pranab';
+GRANT ALL PRIVILEGES ON mydb1.* TO 'iot'@'localhost' IDENTIFIED BY  'pranab'; 
+
+USE `mydb1`;
+
+--
+-- Table structure for table `msgseq`
+--
+
+DROP TABLE IF EXISTS `msgseq`;
+CREATE TABLE `msgseq` (
+  `APPNAME` varchar(30) NOT NULL default '',
+  `APPKEY` varchar(45) NOT NULL default '',
+  `VALUE` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`APPNAME`,`APPKEY`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `msgseq`
+--
+
+
+/*!40000 ALTER TABLE `msgseq` DISABLE KEYS */;
+LOCK TABLES `msgseq` WRITE;
+INSERT INTO `msgseq` VALUES ('spring','execution',10);
+UNLOCK TABLES;
+/*!40000 ALTER TABLE `msgseq` ENABLE KEYS */;
+
+--
+-- Current Database: `mydb2`
+--
+
+--CREATE DATABASE /*!32312 IF NOT EXISTS*/ `mydb2` /*!40100 DEFAULT CHARACTER SET utf8 */;
+DROP DATABASE IF EXISTS mydb2;
+CREATE DATABASE mydb2;
+GRANT ALL PRIVILEGES ON mydb2.* TO 'iot'@'%' IDENTIFIED BY  'pranab';
+GRANT ALL PRIVILEGES ON mydb2.* TO 'iot'@'localhost' IDENTIFIED BY  'pranab'; 
+
+USE `mydb2`;
+
+--
+-- Table structure for table `msgseq`
+--
+
+DROP TABLE IF EXISTS `msgseq`;
+CREATE TABLE `msgseq` (
+  `APPNAME` varchar(30) NOT NULL default '',
+  `APPKEY` varchar(45) NOT NULL default '',
+  `VALUE` varchar(45) NOT NULL default '',
+  PRIMARY KEY  (`APPNAME`,`APPKEY`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `msgseq`
+--
+
+
+/*!40000 ALTER TABLE `msgseq` DISABLE KEYS */;
+LOCK TABLES `msgseq` WRITE;
+INSERT INTO `msgseq` VALUES ('spring','aaaaa','15'),('spring','allocation','10');
+UNLOCK TABLES;
+/*!40000 ALTER TABLE `msgseq` ENABLE KEYS */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
